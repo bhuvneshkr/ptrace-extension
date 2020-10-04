@@ -1,0 +1,51 @@
+***Steps to execute :
+	- make
+	- command. e.g. ./urlextend wc http://www.cs.stonybrook.edu
+
+
+***Usage:
+<file_name> <command> <url> i.e.
+
+urlextend wc http://www.cs.stonybrook.edu
+
+In this program user need to only give the command like wc, cat, vi not the full path. Program internally based on the command input figures out the full path.
+
+- Initally I'm checking the number of arguments input i.e. if its more than three i.e.
+argv[0] : filename , argv[1] : command (system call of which is being intercepted) & argv[2] : url , then program will generated a message to the user for correct user definition and will exit.
+
+- Second to proceed further, output the command and url and creating respective excev command
+
+- Further based on the ORIG_EAX value is SYS_stat64 and SYS_open, I intercept these and using getdata, putdata obtained the data and modified it and write data to the registers.
+
+-Used PTRACE_PEEKUSER and PTRACE_POKEDATA
+
+- One other observation, here for stat64 and open the data is present in EBX, so no need to change and only things have to consider is looking and intercepting specific calls
+
+- Uses calls to ptrace with PTRACE_POKEDATA to change the data values. It works exactly the same way as PTRACE_PEEKDATA, except it both reads and writes the data thatt the child passes in arguments to the system call whereas PEEKDATA only reads the data.
+
+
+***Testing for different URLs:
+
+Moreover, program have not only tested with http://www.cs.stonybrook.edu but with other URLs also like:
+	- http://www.stonybrook.edu
+	- https://grad.stonybrook.edu/
+	- https://www.google.com/
+	- http://www.gmail.com
+	- http://www.yahoo.com
+	- http://www.facebook.com
+	- https://stonybrook.joinhandshake.com/
+
+***Testing for different commands:
+
+I have successfully test the program over different commands i.e.:
+	- wc
+	- cat
+	
+While I validated the program locally if replace URL with some file in the directory and it is working for more commands i.e.
+	- vi
+	- more
+	- less
+but in case of URL, I didn;t able to make it running because URL is temporary while files are permanent so issues comes is accessing (permission). While for files it was resolved because stat64 and open function well.
+
+
+
